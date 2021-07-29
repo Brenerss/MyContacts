@@ -7,7 +7,7 @@ class CategoryController {
   }
 
   async show(request, response) {
-    const { id } = request.query;
+    const { id } = request.params;
     const category = await CategoriesRepository.findById(id);
 
     response.json(category);
@@ -23,6 +23,34 @@ class CategoryController {
     const category = await CategoriesRepository.create({ name });
 
     response.json(category);
+  }
+
+  async update(request, response) {
+    const { id } = request.params;
+    const { name } = request.body;
+
+    const categoryExists = await CategoriesRepository.findById(id);
+
+    if (!categoryExists) {
+      return response.status(400).json({ error: 'User not found' });
+    }
+
+    if (!name) {
+      response.status(400).json({ error: 'Name is required' });
+    }
+
+    const category = await CategoriesRepository.update(id, { name });
+
+    response.json(category);
+  }
+
+  async delete(request, response) {
+    const { id } = request.params;
+
+    await CategoriesRepository.delete(id);
+
+    // 204: No Content
+    response.sendStatus(204);
   }
 }
 
