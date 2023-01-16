@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import isEmailValid from '../../utils/isEmailValid';
@@ -12,12 +12,15 @@ import Button from '../Button';
 
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
+import CategoriesService from '../../services/CategoriesService';
 
-export default function ContactForm({ buttonLabel }) {
+export default function ContactForm({ buttonLabel, onSubmit }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [categoriesIsLoading, setCategoriesIsLoading] = useState(true);
 
   const {
     errors, setError, removeError, getErrorMessageByFieldMessage,
@@ -51,7 +54,27 @@ export default function ContactForm({ buttonLabel }) {
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    const contact = {
+      name, email, phone, categoryId,
+    };
+
+    onSubmit(contact);
   }
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const categoriesList = await CategoriesService.listCategories();
+
+        setCategories(categoriesList);
+      } catch {} finally {
+        setCategoriesIsLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   return (
     <Form onSubmit={handleSubmit} noValidate>
@@ -83,12 +106,18 @@ export default function ContactForm({ buttonLabel }) {
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup isLoading={categoriesIsLoading}>
         <Select
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
+          value={categoryId}
+          onChange={(event) => {
+            setCategoryId(event.target.value);
+          }}
+          disabled={categoriesIsLoading}
         >
-          <option value="Instagram">Instagram</option>
+          <option value="">Sem categoria</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>{category.name}</option>
+          ))}
         </Select>
       </FormGroup>
 
@@ -103,4 +132,5 @@ export default function ContactForm({ buttonLabel }) {
 
 ContactForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };

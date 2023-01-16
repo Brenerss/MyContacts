@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
 import {
   useEffect, useState, useMemo, useCallback,
@@ -5,12 +6,15 @@ import {
 
 import {
   Container, Header, ListHeader, Card, InputSearchContainer, ErrorContainer,
+  EmptyListContainer, SearchNotFoundContainer,
 } from './styles';
 
 import arrow from '../../assets/images/icons/arrow.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import trash from '../../assets/images/icons/trash.svg';
 import sad from '../../assets/images/sad.svg';
+import emptyBox from '../../assets/images/empty-box.svg';
+import magnifierQuestion from '../../assets/images/magnifier-question.svg';
 
 import Loader from '../../components/Loader';
 import Button from '../../components/Button';
@@ -61,15 +65,30 @@ export default function Home() {
     <Container>
       <Loader isLoading={isLoading} />
 
-      <InputSearchContainer>
-        <input type="text" placeholder="Pesquisar contato" value={searchTerm} onChange={handleSearchTerm} />
-      </InputSearchContainer>
+      {contacts.length > 0 && (
+        <InputSearchContainer>
+          <input type="text" placeholder="Pesquisar contato" value={searchTerm} onChange={handleSearchTerm} />
+        </InputSearchContainer>
+      )}
 
-      <Header hasError={hasError}>
-        <strong>
-          {filteredContacts.length}
-          {filteredContacts.length === 1 ? ' contato' : ' contatos'}
-        </strong>
+      <Header
+        justifyContent={
+          // eslint-disable-next-line no-nested-ternary
+          hasError
+            ? 'flex-end'
+            : (
+              contacts.length > 0
+                ? 'space-between'
+                : 'center'
+            )
+        }
+      >
+        {!!(!hasError && contacts.length > 0) && (
+          <strong>
+            {filteredContacts.length}
+            {filteredContacts.length === 1 ? ' contato' : ' contatos'}
+          </strong>
+        )}
         <Link to="/new">Novo contato</Link>
       </Header>
 
@@ -87,13 +106,40 @@ export default function Home() {
 
       {!hasError && (
         <>
+          {(contacts.length < 1 && !isLoading) && (
+            <EmptyListContainer>
+              <img src={emptyBox} alt="empty box" />
+
+              <p>
+                Você ainda não tem nenhum contato cadastrado!
+                Clique no botão
+                <strong> ”Novo contato” </strong>
+                à cima para cadastrar o seu primeiro!
+              </p>
+            </EmptyListContainer>
+          )}
+
+          {(filteredContacts.length < 1 && contacts.length > 0) && (
+            <SearchNotFoundContainer>
+              <img src={magnifierQuestion} alt="magnifier" />
+
+              <span>
+                Nenhum resultado foi encontrado para ”
+                <strong>
+                  {searchTerm}
+                </strong>
+                ”.
+              </span>
+            </SearchNotFoundContainer>
+          )}
+
           {filteredContacts.length > 0 && (
-          <ListHeader orderBy={orderBy}>
-            <button type="button" onClick={handleToggleOrderBy}>
-              <span>Nome</span>
-              <img src={arrow} alt="Arrow" />
-            </button>
-          </ListHeader>
+            <ListHeader orderBy={orderBy}>
+              <button type="button" onClick={handleToggleOrderBy}>
+                <span>Nome</span>
+                <img src={arrow} alt="Arrow" />
+              </button>
+            </ListHeader>
           )}
 
           {filteredContacts.map((contact) => (
