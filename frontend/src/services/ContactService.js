@@ -6,7 +6,11 @@ class ContactService {
   }
 
   async listContacts(orderBy = 'asc') {
-    return this.httpClient.get(`/contacts?orderBy=${orderBy}`);
+    return this.httpClient.get(`/contacts?orderBy=${orderBy}`, {
+      headers: {
+        Authorization: 'meutoken',
+      },
+    });
   }
 
   async createContact(contact) {
