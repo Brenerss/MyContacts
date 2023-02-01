@@ -17,7 +17,6 @@ import formatPhone from '../../utils/formatPhone';
 import CategoriesService from '../../services/CategoriesService';
 
 const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
-  console.log(ref);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');

@@ -25,7 +25,7 @@ export default function EditContact() {
         history.push('/');
         toast({
           type: 'danger',
-          text: 'Contato nao encontrado!',
+          text: 'Contato não encontrado!',
         });
       } finally {
         setIsLoading(false);
