@@ -15,14 +15,15 @@ import Button from '../Button';
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
 import CategoriesService from '../../services/CategoriesService';
+import useSafeAsyncState from '../../hooks/useSafeAsyncState';
 
 const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [categoriesIsLoading, setCategoriesIsLoading] = useState(true);
+  const [categories, setCategories] = useSafeAsyncState([]);
+  const [categoriesIsLoading, setCategoriesIsLoading] = useSafeAsyncState(true);
   const [isSubmiting, setIsSubmiting] = useState(false);
 
   const {
@@ -81,7 +82,7 @@ const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
     }
 
     loadCategories();
-  }, []);
+  }, [setCategories, setCategoriesIsLoading]);
 
   useImperativeHandle(ref, () => ({
     setFieldValues: (contact) => {
