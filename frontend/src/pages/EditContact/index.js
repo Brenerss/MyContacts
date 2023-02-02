@@ -23,7 +23,7 @@ export default function EditContact() {
     async function loadContacts() {
       try {
         const contact = await ContactService.getContactById(
-          423432432,
+          id,
         );
 
         safeAsyncAction(() => {
@@ -45,15 +45,8 @@ export default function EditContact() {
     loadContacts();
   }, [id, history, safeAsyncAction]);
 
-  async function handleSubmit(formData) {
+  async function handleSubmit(contact) {
     try {
-      const contact = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        category_id: formData.categoryId,
-      };
-
       const updatedContact = await ContactService.updateContact(
         id,
         contact,
