@@ -27,6 +27,7 @@ const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
     isFormValid,
   } = useContactForm(onSubmit, ref);
 
+  return (
     <Form onSubmit={handleSubmit} noValidate>
       <FormGroup error={getErrorMessageByFieldMessage('name')}>
         <Input
@@ -83,7 +84,8 @@ const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
           {buttonLabel}
         </Button>
       </ButtonContainer>
-    </Form>;
+    </Form>
+  );
 });
 
 ContactForm.propTypes = {

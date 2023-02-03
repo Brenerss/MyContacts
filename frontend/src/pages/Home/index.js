@@ -1,22 +1,19 @@
-/* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
 
-import {
-  Container, Header, ListHeader, Card, InputSearchContainer, ErrorContainer,
-  EmptyListContainer, SearchNotFoundContainer,
-} from './styles';
+import { Container, ListHeader, Card } from './styles';
 
 import arrow from '../../assets/images/icons/arrow.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import trash from '../../assets/images/icons/trash.svg';
-import sad from '../../assets/images/sad.svg';
-import emptyBox from '../../assets/images/empty-box.svg';
-import magnifierQuestion from '../../assets/images/magnifier-question.svg';
 
 import Loader from '../../components/Loader';
-import Button from '../../components/Button';
 import Modal from '../../components/Modal';
 import useHome from './useHome';
+import InputSearch from './components/InputSearch';
+import Header from './components/Header';
+import ErrorStatus from './components/ErrorStatus';
+import EmptyList from './components/EmptyList';
+import SearchNotFound from './components/SearchNotFound';
 
 export default function Home() {
   const {
@@ -40,84 +37,36 @@ export default function Home() {
   return (
     <Container>
       <Loader isLoading={isLoading} />
-      <Modal
-        danger
-        confirmLabel="Deletar"
-        title={`Tem certeza que deseja deletar o contato "${contactBeingDelete?.name}"`}
-        visible={isDeleteModalVisible}
-        onCancel={handleCloseDeleteModal}
-        onConfirm={handleConfirmDeleteContact}
-        isLoading={isLoadingDelete}
-      >
-        <p>Esta ação não poderá ser desfeita!</p>
-      </Modal>
 
       {contacts.length > 0 && (
-        <InputSearchContainer>
-          <input type="text" placeholder="Pesquisar contato" value={searchTerm} onChange={handleSearchTerm} />
-        </InputSearchContainer>
+        <InputSearch
+          value={searchTerm}
+          onChange={handleSearchTerm}
+        />
       )}
 
       <Header
-        justifyContent={
-          // eslint-disable-next-line no-nested-ternary
-          hasError
-            ? 'flex-end'
-            : (
-              contacts.length > 0
-                ? 'space-between'
-                : 'center'
-            )
-        }
-      >
-        {!!(!hasError && contacts.length > 0) && (
-          <strong>
-            {filteredContacts.length}
-            {filteredContacts.length === 1 ? ' contato' : ' contatos'}
-          </strong>
-        )}
-        <Link to="/new">Novo contato</Link>
-      </Header>
+        hasError={hasError}
+        qtyOfContacts={contacts.length}
+        qtyOfFilteredContacts={filteredContacts.length}
+      />
 
       {hasError && (
-        <ErrorContainer>
-          <img src={sad} alt="sad" />
-          <div className="details">
-            <strong>Ocorreu um erro ao obter os seus contatos!</strong>
-            <Button type="button" onClick={handleTryAgain}>
-              Tentar novamente
-            </Button>
-          </div>
-        </ErrorContainer>
+        <ErrorStatus
+          onTryAgain={handleTryAgain}
+        />
       )}
 
       {!hasError && (
         <>
           {(contacts.length < 1 && !isLoading) && (
-            <EmptyListContainer>
-              <img src={emptyBox} alt="empty box" />
-
-              <p>
-                Você ainda não tem nenhum contato cadastrado!
-                Clique no botão
-                <strong> ”Novo contato” </strong>
-                à cima para cadastrar o seu primeiro!
-              </p>
-            </EmptyListContainer>
+            <EmptyList />
           )}
 
           {(filteredContacts.length < 1 && contacts.length > 0) && (
-            <SearchNotFoundContainer>
-              <img src={magnifierQuestion} alt="magnifier" />
-
-              <span>
-                Nenhum resultado foi encontrado para ”
-                <strong>
-                  {searchTerm}
-                </strong>
-                ”.
-              </span>
-            </SearchNotFoundContainer>
+            <SearchNotFound
+              searchTerm={searchTerm}
+            />
           )}
 
           {filteredContacts.length > 0 && (
@@ -153,6 +102,18 @@ export default function Home() {
           ))}
         </>
       )}
+
+      <Modal
+        danger
+        confirmLabel="Deletar"
+        title={`Tem certeza que deseja deletar o contato "${contactBeingDelete?.name}"`}
+        visible={isDeleteModalVisible}
+        onCancel={handleCloseDeleteModal}
+        onConfirm={handleConfirmDeleteContact}
+        isLoading={isLoadingDelete}
+      >
+        <p>Esta ação não poderá ser desfeita!</p>
+      </Modal>
     </Container>
   );
 }
