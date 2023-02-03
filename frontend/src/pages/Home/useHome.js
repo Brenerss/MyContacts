@@ -88,6 +88,7 @@ export default function useHome() {
     isLoading,
     contactBeingDelete,
     isDeleteModalVisible,
+    orderBy,
     handleCloseDeleteModal,
     handleConfirmDeleteContact,
     isLoadingDelete,
